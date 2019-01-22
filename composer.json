@@ -3,7 +3,7 @@
     "description": "Unofficial PHP interface for TrueMoney Wallet",
     "keywords": ["truewallet"],
     "type": "library",
-    "license": "All rights reserved",
+    "license": "GPL-3.0-or-later",
     "authors": [
         {
             "name": "Jittapan P",
