@@ -32,10 +32,10 @@ class Transaction
     }
 
     /**
-     * @param wallet PhpWalletLib object
+     * @param wallet PhpWalletLib object (optional if this method was called before with a PhpWalletLib object)
      * @return TransactionDetails
      */
-    public function LoadDetails($wallet)
+    public function LoadDetails($wallet = null)
     {
         if ($this->details === null) {
             $data = $wallet->GetTransactionDetails($this->GetReportId());
