@@ -36,7 +36,7 @@ class TransactionDetails
      */
     public function GetMessage()
     {
-        return $data['personal_message']['value'];
+        return $this->data['personal_message']['value'];
     }
 
     /**
@@ -45,7 +45,7 @@ class TransactionDetails
      */
     public function GetRef1()
     {
-        return $data['ref1'];
+        return $this->data['ref1'];
     }
 
     /**
@@ -54,7 +54,7 @@ class TransactionDetails
      */
     public function GetSenderName()
     {
-        return $data['section2']['column1']['cell2']['value'];
+        return $this->data['section2']['column1']['cell2']['value'];
     }
 
     /**
@@ -63,6 +63,6 @@ class TransactionDetails
      */
     public function GetReferenceId()
     {
-        return $data['section4']['column2']['cell1']['value'];
+        return $this->data['section4']['column2']['cell1']['value'];
     }
 }

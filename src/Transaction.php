@@ -86,6 +86,6 @@ class Transaction
      */
     public function GetDateTime()
     {
-        return date_create_from_format('d/m/yy H:i', $this->data['date_time']);
+        return date_create_from_format('d/m/y H:i', $this->data['date_time']);
     }
 }
