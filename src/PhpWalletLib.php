@@ -25,6 +25,11 @@ class PhpWalletLib
     private $httpClient;
     private $token;
 
+    private function get($url, $options = [])
+    {
+        return $this->httpClient->request('GET', $url, array_merge(['http_errors' => false], $options));
+    }
+
     /**
      * Send POST request to API endpoint
      * @return mixed GuzzleHttp response object
@@ -36,6 +41,7 @@ class PhpWalletLib
             'headers' => [
                 'Content-Type' => 'application/json',
             ],
+            'http_errors' => false,
         ]);
     }
 
@@ -50,6 +56,7 @@ class PhpWalletLib
                         'User-Agent' => 'okhttp/3.8.0',
                     ],
                 ],
+                'http_errors' => false,
             ],
         ]);
 
@@ -60,7 +67,7 @@ class PhpWalletLib
         ]);
 
         if ($response->getStatusCode() !== 200) {
-            throw new Exception('Authentication failed');
+            throw new \Exception('Authentication failed');
         } else {
             $body = @json_decode($response->getBody());
             $this->token = $body->data->accessToken;
@@ -73,9 +80,9 @@ class PhpWalletLib
      */
     public function GetBalance()
     {
-        $response = $this->httpClient->request('GET', "api/v1/profile/balance/{$this->token}");
+        $response = $this->get("api/v1/profile/balance/{$this->token}");
         if ($response->getStatusCode() !== 200) {
-            throw new Exception('Failed to fetch balance');
+            throw new \Exception('Failed to fetch balance');
         }
         return @json_decode($response->getBody())->data->currentBalance;
     }
@@ -86,9 +93,9 @@ class PhpWalletLib
      */
     public function GetProfile()
     {
-        $response = $this->httpClient->request('GET', "api/v1/profile/{$this->token}");
+        $response = $this->get("api/v1/profile/{$this->token}");
         if ($response->getStatusCode() !== 200) {
-            throw new Exception('Failed to fetch profile');
+            throw new \Exception('Failed to fetch profile');
         }
         $profile = @json_decode($response->getBody(), true)['data'];
         // Just return what we get for now, too lazy to map it to my own format :>
@@ -115,13 +122,17 @@ class PhpWalletLib
      */
     public function GetPastTransactions($start, $end, $limit = 25)
     {
-        $response = $this->httpClient->request('GET', "user-profile-composite/v1/users/transactions/history?start_date={$start}&end_date={$end}&limit={$limit}", [
+        if ($limit > 50 || $limit < 1) {
+            throw new \Exception('Transaction limit must be in range of 1-50 (inclusive)');
+        }
+
+        $response = $this->get("user-profile-composite/v1/users/transactions/history?start_date={$start}&end_date={$end}&limit={$limit}", [
             'headers' => [
                 'Authorization' => $this->token,
             ],
         ]);
         if ($response->getStatusCode() !== 200) {
-            throw new Exception('Failed to fetch transactions');
+            throw new \Exception('Failed to fetch transactions');
         }
         $body = @json_decode($response->getBody(), true)['data'];
         $transactions = [];
@@ -147,13 +158,13 @@ class PhpWalletLib
      */
     public function GetTransactionDetails($txid)
     {
-        $response = $this->httpClient->request('GET', "user-profile-composite/v1/users/transactions/history/detail/$txid", [
+        $response = $this->get("user-profile-composite/v1/users/transactions/history/detail/$txid", [
             'headers' => [
                 'Authorization' => $this->token,
             ],
         ]);
         if ($response->getStatusCode() !== 200) {
-            throw new Exception('Failed to fetch transaction details');
+            throw new \Exception('Failed to fetch transaction details');
         }
         $body = @json_decode($response->getBody(), true)['data'];
         return $body;
